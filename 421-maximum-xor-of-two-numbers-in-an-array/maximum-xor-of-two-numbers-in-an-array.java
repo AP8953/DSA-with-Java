@@ -1,42 +1,27 @@
 class Solution {
-    // Define the TrieNode class
-    static class TrieNode {
-        TrieNode[] children = new TrieNode[2]; // Each node can have 0 or 1 as a child
-    }
-
     public int findMaximumXOR(int[] nums) {
-        TrieNode root = new TrieNode();
-        
-        // Function to insert a number into the Trie
-        for (int num : nums) {
-            TrieNode node = root;
-            for (int i = 31; i >= 0; i--) { // Process the number bit by bit from the MSB to LSB
-                int bit = (num >> i) & 1; // Extract the i-th bit
-                if (node.children[bit] == null) {
-                    node.children[bit] = new TrieNode();
-                }
-                node = node.children[bit];
-            }
-        }
-        
         int max = 0;
+        int mask = 0;
         
-        // Function to calculate the maximum XOR for each number
-        for (int num : nums) {
-            TrieNode node = root;
-            int currXOR = 0;
-            for (int i = 31; i >= 0; i--) { // Process the number bit by bit from the MSB to LSB
-                int bit = (num >> i) & 1;
-                int oppositeBit = 1 - bit; // Opposite bit of the current bit
-                if (node.children[oppositeBit] != null) {
-                    currXOR = (currXOR << 1) | 1; // Add 1 to the XOR result
-                    node = node.children[oppositeBit];
-                } else {
-                    currXOR = (currXOR << 1); // Add 0 to the XOR result
-                    node = node.children[bit];
+        // Traverse from the most significant bit (31st bit) to the least significant bit (0th bit)
+        for (int i = 31; i >= 0; i--) {
+            mask |= (1 << i); // Create a mask that includes the first i bits
+            HashSet<Integer> prefixes = new HashSet<>();
+            
+            // Add all the prefixes of the current numbers
+            for (int num : nums) {
+                prefixes.add(num & mask);
+            }
+            
+            // Try to find the maximum XOR for the current bit
+            int candidate = max | (1 << i); // Set the current bit in the candidate result
+            for (int prefix : prefixes) {
+                // Check if there exists a prefix that can give the candidate XOR
+                if (prefixes.contains(prefix ^ candidate)) {
+                    max = candidate; // Update max if a better candidate is found
+                    break;
                 }
             }
-            max = Math.max(max, currXOR);
         }
         
         return max;
