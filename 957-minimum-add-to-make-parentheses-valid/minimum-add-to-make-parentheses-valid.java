@@ -1,20 +1,17 @@
+import java.util.Stack;
+
 class Solution {
     public int minAddToMakeValid(String s) {
-        int balance = 0; // Tracks unmatched opening parentheses '('
-        int count = 0;   // Tracks unmatched closing parentheses ')'
-
+        Stack<Character> stack = new Stack<>();
         for (char c : s.toCharArray()) {
             if (c == '(') {
-                balance++; // Increment for an opening parenthesis
+                stack.push(c);
+            } else if (!stack.isEmpty() && stack.peek() == '(') {
+                stack.pop(); // Valid pair found, remove the opening parenthesis
             } else {
-                if (balance > 0) {
-                    balance--; // Match with an opening parenthesis
-                } else {
-                    count++; // Unmatched closing parenthesis
-                }
+                stack.push(c); // Push the unmatched closing parenthesis
             }
         }
-
-        return count + balance; // Total unmatched '(' + unmatched ')'
+        return stack.size(); // Remaining elements in the stack are unmatched parentheses
     }
 }
