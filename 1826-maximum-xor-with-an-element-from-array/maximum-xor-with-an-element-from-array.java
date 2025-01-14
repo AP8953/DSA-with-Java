@@ -1,94 +1,96 @@
 class Solution {
-    // Define a node structure for a trie
+    // Define the Trie Node structure
     static class Node {
-        Node[] links = new Node[2];
+        Node[] links = new Node[2]; // Binary Trie has two possible children: 0 and 1
 
-        boolean containsKey(int ind) {
-            return links[ind] != null;
+        boolean containsKey(int bit) {
+            return links[bit] != null; // Check if a specific bit branch exists
         }
 
-        Node get(int ind) {
-            return links[ind];
+        Node get(int bit) {
+            return links[bit]; // Get the child node for a specific bit
         }
 
-        void put(int ind, Node node) {
-            links[ind] = node;
+        void put(int bit, Node node) {
+            links[bit] = node; // Create a new branch for the bit
         }
     }
 
-    // Trie data structure for handling binary representations of numbers
+    // Trie structure for storing binary representations of numbers
     static class Trie {
-        Node root;
+        private final Node root;
 
         Trie() {
-            root = new Node();
+            root = new Node(); // Initialize root node
         }
 
         void insert(int num) {
             Node node = root;
+            // Iterate over the 32 bits of the number from most significant to least significant
             for (int i = 31; i >= 0; i--) {
-                int bit = (num >> i) & 1;
+                int bit = (num >> i) & 1; // Extract the i-th bit
                 if (!node.containsKey(bit)) {
-                    node.put(bit, new Node());
+                    node.put(bit, new Node()); // Create a branch for the bit if it doesn't exist
                 }
-                node = node.get(bit);
+                node = node.get(bit); // Move to the next node
             }
         }
 
-        int findMax(int num) {
+        int findMaxXor(int num) {
             Node node = root;
-            int maxNum = 0;
+            int maxXor = 0;
+
+            // Try to build the number that maximizes XOR
             for (int i = 31; i >= 0; i--) {
-                int bit = (num >> i) & 1;
-                if (node.containsKey(1 - bit)) {
-                    maxNum |= (1 << i);
-                    node = node.get(1 - bit);
+                int bit = (num >> i) & 1; // Extract the i-th bit
+                int oppositeBit = 1 - bit; // XOR is maximized by taking the opposite bit
+
+                if (node.containsKey(oppositeBit)) {
+                    maxXor |= (1 << i); // Update the result with the i-th bit set
+                    node = node.get(oppositeBit);
                 } else {
-                    node = node.get(bit);
+                    node = node.get(bit); // Follow the same bit branch if opposite doesn't exist
                 }
             }
-            return maxNum;
+            return maxXor;
         }
     }
 
     public int[] maximizeXor(int[] nums, int[][] queries) {
-        // Array to store the results
-        int[] ans = new int[queries.length];
+        int[] result = new int[queries.length];
+        List<int[]> sortedQueries = new ArrayList<>();
 
-        // List to store offline queries as pairs of (maxValue, (number, queryIndex))
-        List<int[]> offlineQueries = new ArrayList<>();
+        // Pair each query with its index and sort by the maxValue
         for (int i = 0; i < queries.length; i++) {
-            offlineQueries.add(new int[]{queries[i][1], queries[i][0], i});
+            sortedQueries.add(new int[]{queries[i][1], queries[i][0], i});
         }
 
-        // Sort nums and offline queries based on their maxValue
+        // Sort nums and queries
         Arrays.sort(nums);
-        offlineQueries.sort((a, b) -> Integer.compare(a[0], b[0]));
+        sortedQueries.sort((a, b) -> Integer.compare(a[0], b[0]));
 
         Trie trie = new Trie();
-        int idx = 0;
-        int n = nums.length;
+        int index = 0;
 
-        // Process each query
-        for (int[] query : offlineQueries) {
+        for (int[] query : sortedQueries) {
             int maxValue = query[0];
-            int number = query[1];
+            int num = query[1];
             int queryIndex = query[2];
 
-            // Insert elements into Trie that are ≤ maxValue
-            while (idx < n && nums[idx] <= maxValue) {
-                trie.insert(nums[idx]);
-                idx++;
+            // Insert numbers into the Trie that are ≤ maxValue
+            while (index < nums.length && nums[index] <= maxValue) {
+                trie.insert(nums[index]);
+                index++;
             }
 
-            // If no numbers have been inserted, the result is -1
-            if (idx == 0) {
-                ans[queryIndex] = -1;
+            // If no numbers are eligible, return -1 for this query
+            if (index == 0) {
+                result[queryIndex] = -1;
             } else {
-                ans[queryIndex] = trie.findMax(number);
+                result[queryIndex] = trie.findMaxXor(num);
             }
         }
 
-        return ans;
+        return result;
     }
 }
