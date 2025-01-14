@@ -1,41 +1,56 @@
-class Solution {
-    Set<Integer> vis = new HashSet<>();
-
-    public int findMaximumXOR(int[] nums) {
-        int max = 0, ans = 0, mask = 0, masks = 0;
-
-        for(int num : nums) {
-            max = Math.max(max, num);
-        }
-        
-        int bit = 31;
-
-        while(bit-- >= 0) {
-            if((max >> bit & 1) == 1) break;
-        }
-
-        for(int i = bit; i >= 0; i--) {
-            mask = 1 << i;
-            masks |= mask;
-
-            if(check(nums, masks, ans | mask)) {
-                ans |= mask;
-            }
-            vis.clear();
-        }
-        return ans;
+class Node{
+    Node link[]=new Node[2];
+    boolean containsKey(int index){
+        return link[index]!=null;
     }
-
-    private boolean check(int[] nums, int masks, int ans) {
-        
-        for(int num : nums) {
-            num &= masks;
-            
-            if(vis.contains(num ^ ans)) {
-                return true;
+    Node get(int index){
+        return link[index];
+    }
+    void put(int index, Node node){
+        link[index]=node;
+    }
+}
+class Trie{
+    private static Node root;
+    Trie(){
+        root=new Node();
+    }
+    public static void insert(int num){
+        Node node =root;
+        for(int i=31;i>=0;i--){
+            int bit=(num>>i)&1;
+            if(!node.containsKey(bit)){
+                node.put(bit, new Node());
             }
-            vis.add(num);
+            node=node.get(bit);
         }
-        return false;
+    }
+    public int getMax(int num){
+        Node node=root;
+        int max=0;
+        for(int i=31;i>=0;i--){
+            int bit=(num>>i)&1;
+            if(node.containsKey(1-bit)){
+                max=max|(1<<i);
+                node=node.get(1-bit);
+            }
+            else{
+                node=node.get(bit);
+            }
+        }
+        return max;
+    }
+}
+class Solution {
+    public int findMaximumXOR(int[] nums) {
+        Trie trie= new Trie();
+        for(int i=0;i<nums.length;i++){
+            trie.insert(nums[i]);
+        }
+        int max=0;
+        for(int i=0;i<nums.length;i++){
+            max=Math.max(max, trie.getMax(nums[i]));
+        }
+        return max;
     }
 }
