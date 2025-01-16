@@ -1,77 +1,73 @@
 class Solution {
-    public int repeatedStringMatch(String a, String b) {
-        int m = a.length(), n = b.length();
+    // Rabin-Karp implementation to check if s2 is a substring of s1
+    public boolean rabinKarp(String s1, String s2) {
+        long p = 31; // Prime number for hashing
+        long mod = 1000000007; // Large prime for modulo operation
+        long pow = 1;
+        long bHash = 0; // Hash of the string s2
 
-        // Minimum repetitions to ensure b's length is covered
-        int minRepeats = (n + m - 1) / m; // Equivalent to ceil(n / m)
-
-        // Build the repeated string for minRepeats
-        StringBuilder repeatedA = new StringBuilder();
-        for (int i = 0; i < minRepeats; i++) {
-            repeatedA.append(a);
+        // Calculate the hash for s2
+        for (int i = 0; i < s2.length(); i++) {
+            bHash = (bHash + (s2.charAt(i) - 'a' + 1) * pow) % mod;
+            pow = (pow * p) % mod;
         }
 
-        // Check if b is a substring with minRepeats
-        if (repeatedA.toString().contains(b)) {
-            return minRepeats;
+        // Generate prefix hashes and powers for s1
+        long[] prefixHash = new long[s1.length()];
+        long[] prefixPower = new long[s1.length()];
+
+        prefixHash[0] = s1.charAt(0) - 'a' + 1;
+        prefixPower[0] = 1;
+        pow = p;
+
+        for (int i = 1; i < s1.length(); i++) {
+            prefixHash[i] = (prefixHash[i - 1] + (s1.charAt(i) - 'a' + 1) * pow) % mod;
+            prefixPower[i] = pow;
+            pow = (pow * p) % mod;
         }
 
-        // Add one more repetition to account for overlaps
-        repeatedA.append(a);
-        if (repeatedA.toString().contains(b)) {
-            return minRepeats + 1;
+        // Sliding window to find a substring in s1 that matches the hash of s2
+        int start = 0;
+        int end = s2.length() - 1;
+
+        while (end < s1.length()) {
+            long currentHash = prefixHash[end];
+
+            if (start > 0) {
+                currentHash = (currentHash - prefixHash[start - 1] + mod) % mod;
+            }
+
+            if ((bHash * prefixPower[start]) % mod == currentHash) {
+                return true; // Found s2 in s1
+            }
+
+            start++;
+            end++;
         }
 
-        // If b is still not a substring, return -1
-        return -1;
+        return false; // s2 is not a substring of s1
     }
 
-    private boolean rabinKarp(String text, String pattern) {
-        int d = 256; // Number of characters in the input alphabet
-        int q = 101; // A prime number to reduce hash collisions
-        int m = pattern.length();
-        int n = text.length();
-        int pHash = 0; // Hash value for the pattern
-        int tHash = 0; // Hash value for the text
-        int h = 1; // Value of d^(m-1) % q
+    public int repeatedStringMatch(String a, String b) {
+        StringBuilder sb = new StringBuilder();
+        int count = 0;
 
-        // Compute h = d^(m-1) % q
-        for (int i = 0; i < m - 1; i++) {
-            h = (h * d) % q;
+        // Repeat `a` until its length exceeds or equals `b`
+        while (sb.length() < b.length()) {
+            sb.append(a);
+            count++;
         }
 
-        // Compute initial hash values for pattern and first window of text
-        for (int i = 0; i < m; i++) {
-            pHash = (d * pHash + pattern.charAt(i)) % q;
-            tHash = (d * tHash + text.charAt(i)) % q;
+        // Check if `b` is a substring of the repeated `a`
+        if (rabinKarp(sb.toString(), b)) {
+            return count;
+        }
+        // Check if one more repetition of `a` makes `b` a substring
+        else if (rabinKarp(sb.toString() + a, b)) {
+            return count + 1;
         }
 
-        // Slide the pattern over text one character at a time
-        for (int i = 0; i <= n - m; i++) {
-            // Check if the hash values match
-            if (pHash == tHash) {
-                // Perform a character-by-character check
-                boolean match = true;
-                for (int j = 0; j < m; j++) {
-                    if (text.charAt(i + j) != pattern.charAt(j)) {
-                        match = false;
-                        break;
-                    }
-                }
-                if (match) {
-                    return true;
-                }
-            }
-
-            // Compute hash value for next window of text
-            if (i < n - m) {
-                tHash = (d * (tHash - text.charAt(i) * h) + text.charAt(i + m)) % q;
-                if (tHash < 0) {
-                    tHash += q; // Make sure hash value is positive
-                }
-            }
-        }
-
-        return false;
+        // `b` cannot be a substring of any repetition of `a`
+        return -1;
     }
 }
