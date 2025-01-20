@@ -1,6 +1,5 @@
 class Solution {
-
-    private static int[] calculateLPS(String s){
+    public String longestPrefix(String s) {
         int n = s.length();
         int[] lps = new int[n];
         int j = 0; // Pointer for prefix
@@ -19,15 +18,11 @@ class Solution {
                 }
             }
         }
-        return lps;
-    }
-    public String longestPrefix(String s) {
-        int[] lps=calculateLPS(s);
-        int prefixLength = lps[s.length() - 1];
+
+        // Length of the longest happy prefix
+        int prefixLength = lps[n - 1];
 
         // Return the substring if a happy prefix exists, else return ""
         return prefixLength > 0 ? s.substring(0, prefixLength) : "";
     }
-
-    
 }
