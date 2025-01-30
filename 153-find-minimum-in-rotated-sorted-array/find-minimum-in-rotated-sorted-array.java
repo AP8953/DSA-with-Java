@@ -9,6 +9,7 @@ class Solution {
                 first=mid+1;
             }
         }
+        System.gc();
         return nums[first];
     }
 }
