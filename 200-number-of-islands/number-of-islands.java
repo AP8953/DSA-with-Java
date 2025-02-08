@@ -1,7 +1,7 @@
 class Solution {
     int[][] dir={{0,1},{0,-1},{1,0},{-1,0}};
     public int numIslands(char[][] grid) {
-        //if (grid == null || grid.length == 0) return 0;
+        if (grid == null || grid.length == 0) return 0;
         Queue<int[]> queue = new LinkedList<>();
         int count=0;
         for(int i=0;i<grid.length;i++){
