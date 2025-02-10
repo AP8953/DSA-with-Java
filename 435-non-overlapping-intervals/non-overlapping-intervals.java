@@ -1,16 +1,21 @@
 class Solution {
     public int eraseOverlapIntervals(int[][] intervals) {
+        // Sort intervals based on end time (greedy approach)
         Arrays.sort(intervals, (a, b) -> Integer.compare(a[1], b[1]));
-        List<int[]> ans=new ArrayList<>();
-        ans.add(intervals[0]);
-        int count=1;
-        int lastEnd=ans.get(0)[1];
-        for(int i=1;i<intervals.length;i++){
-            if(intervals[i][0]>=lastEnd){
+        
+        int count = 0;
+        int lastEnd = Integer.MIN_VALUE;  // Track the last included interval's end time
+        
+        for (int[] interval : intervals) {
+            if (interval[0] >= lastEnd) {
+                // No overlap, update lastEnd
+                lastEnd = interval[1];
+            } else {
+                // Overlapping interval, must be removed
                 count++;
-                lastEnd=intervals[i][1];
             }
         }
-        return intervals.length-count;
+        
+        return count;
     }
 }
