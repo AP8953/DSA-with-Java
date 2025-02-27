@@ -1,24 +1,31 @@
 class Solution {
-    public int subarraysWithKDistinct(int[] nums, int k) {
-        return atMost(nums,k) - atMost(nums,k-1);
+    static {
+        for(int i = 0; i < 500; ++i)
+            subarraysWithKDistinct(new int[0], 1);
     }
-    private int atMost(int[] nums, int k){
-        int left=0, right=0;
-        HashMap<Integer, Integer> count=new HashMap<>();
-        int ans=0;
-        while(right<nums.length){
-            int num=nums[right];
-            count.put(num, count.getOrDefault(num,0)+1);
-            right++;
-            while(count.size()>k){
-                int temp=nums[left];
-                count.put(temp, count.get(temp)-1);
-                if(count.get(temp)==0) count.remove(temp);
-                left++;
+    public static int subarraysWithAtmostKDistinct(int[] nums, int k) {
+        if(k < 0) return 0;
+        int n = nums.length;
+        int[] mpp = new int[n+1];
+        int left = 0;
+        int cnt = 0;
+        int distinct = 0;
 
+        for(int right = 0; right < n; ++right) {
+            if(mpp[nums[right]] == 0) ++distinct;
+            ++mpp[nums[right]];
+
+            while (distinct > k) {
+                --mpp[nums[left]];
+                if(mpp[nums[left]] == 0) --distinct;
+                ++left;
             }
-            ans+=right-left;
+
+            cnt += right - left + 1;
         }
-        return ans;
+        return cnt;
+    }
+    public static int subarraysWithKDistinct(int[] nums, int k) {
+        return subarraysWithAtmostKDistinct(nums, k) - subarraysWithAtmostKDistinct(nums, k-1);
     }
 }
