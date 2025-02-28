@@ -1,31 +1,31 @@
+import java.util.*;
+
 class Solution {
-    static {
-        for(int i = 0; i < 500; ++i)
-            subarraysWithKDistinct(new int[0], 1);
+    public int subarraysWithKDistinct(int[] nums, int k) {
+        return atMostK(nums, k) - atMostK(nums, k - 1);
     }
-    public static int subarraysWithAtmostKDistinct(int[] nums, int k) {
-        if(k < 0) return 0;
-        int n = nums.length;
-        int[] mpp = new int[n+1];
-        int left = 0;
-        int cnt = 0;
+
+    private int atMostK(int[] nums, int k) {
+        if (k < 0) return 0;
+
+        int left = 0, right = 0, total = 0;
+        int[] count = new int[nums.length + 1]; // Frequency array
         int distinct = 0;
 
-        for(int right = 0; right < n; ++right) {
-            if(mpp[nums[right]] == 0) ++distinct;
-            ++mpp[nums[right]];
+        while (right < nums.length) {
+            if (count[nums[right]] == 0) distinct++; // New distinct element
+            count[nums[right]]++;
+            right++;
 
-            while (distinct > k) {
-                --mpp[nums[left]];
-                if(mpp[nums[left]] == 0) --distinct;
-                ++left;
+            while (distinct > k) { // Shrink window if too many distinct elements
+                count[nums[left]]--;
+                if (count[nums[left]] == 0) distinct--; // Remove distinct element
+                left++;
             }
 
-            cnt += right - left + 1;
+            total += (right - left); // Count all valid subarrays ending at `right - 1`
         }
-        return cnt;
-    }
-    public static int subarraysWithKDistinct(int[] nums, int k) {
-        return subarraysWithAtmostKDistinct(nums, k) - subarraysWithAtmostKDistinct(nums, k-1);
+
+        return total;
     }
 }
