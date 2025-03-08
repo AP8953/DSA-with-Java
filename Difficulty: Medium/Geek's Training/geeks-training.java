@@ -32,26 +32,26 @@ class GFG {
 
 class Solution {
     public int maximumPoints(int arr[][]) {
-        int n = arr.length;
+        int n = arr.length;  // Get the number of days
         
-        // Initialize dp values for the first row
-        int prev0 = arr[0][0];
-        int prev1 = arr[0][1];
-        int prev2 = arr[0][2];
-
-        // Iterating over remaining rows
-        for (int i = 1; i < n; i++) {
-            int curr0 = arr[i][0] + Math.max(prev1, prev2);
-            int curr1 = arr[i][1] + Math.max(prev0, prev2);
-            int curr2 = arr[i][2] + Math.max(prev0, prev1);
-
-            // Move current row values to previous row variables
-            prev0 = curr0;
-            prev1 = curr1;
-            prev2 = curr2;
+        // dp[i][j] will store the maximum points till day i with last activity j
+        int[][] dp = new int[n][3];
+        
+        // Initialize the dp array for the first day
+        for (int j = 0; j < 3; j++) {
+            dp[0][j] = arr[0][j];
         }
-
-        // Final maximum of last row
-        return Math.max(prev0, Math.max(prev1, prev2));
+        
+        // Fill the dp array for subsequent days
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < 3; j++) {
+                // We need to choose the best activity for the current day
+                // Avoid the activity that was chosen the previous day (activity j)
+                dp[i][j] = arr[i][j] + Math.max(dp[i - 1][(j + 1) % 3], dp[i - 1][(j + 2) % 3]);
+            }
+        }
+        
+        // The answer will be the maximum of the last day's activities
+        return Math.max(dp[n - 1][0], Math.max(dp[n - 1][1], dp[n - 1][2]));
     }
 }
