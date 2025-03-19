@@ -1,23 +1,21 @@
-import java.util.*;
-
 class Solution {
     public int minimumTotal(List<List<Integer>> triangle) {
-        int n = triangle.size();
-        int[][] dp = new int[n][n];
-        for (int[] row : dp)
+        int n=triangle.size();
+        int dp[][] = new int[n][n];
+        for (int row[] : dp)
             Arrays.fill(row, -1);
-        return minimumPathSumUtil(0, 0, triangle, n, dp);
+        return countSum(triangle, 0,0,dp);
+
     }
-    
-    private int minimumPathSumUtil(int i, int j, List<List<Integer>> triangle, int n, int[][] dp) {
+    private int countSum(List<List<Integer>> triangle, int i, int j, int[][] dp){
         if (dp[i][j] != -1)
             return dp[i][j];
-        if (i == n - 1)
-            return triangle.get(i).get(j);
-        
-        int down = triangle.get(i).get(j) + minimumPathSumUtil(i + 1, j, triangle, n, dp);
-        int diagonal = triangle.get(i).get(j) + minimumPathSumUtil(i + 1, j + 1, triangle, n, dp);
-        
-        return dp[i][j] = Math.min(down, diagonal);
+        int m=triangle.size();
+        if(i==m-1) return triangle.get(m-1).get(j);
+        int down=triangle.get(i).get(j)+countSum(triangle, i+1, j, dp);
+        int downRight=triangle.get(i).get(j)+countSum(triangle,i+1,j+1, dp);
+        dp[i][j] = Math.min(down, downRight);  // Store the result in dp
+        return dp[i][j];
     }
+    
 }
