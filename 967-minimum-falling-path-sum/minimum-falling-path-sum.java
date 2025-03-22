@@ -1,11 +1,11 @@
 class Solution {
     public int minFallingPathSum(int[][] matrix) {
         int n = matrix.length;
-        int[][] dp = new int[n][n];
+        //int[][] dp = new int[n][n];
         int[] prev=new int[n];
-        for (int j = 0; j < n; j++) {
-            dp[0][j] = matrix[0][j];
-        }
+        // for (int j = 0; j < n; j++) {
+        //     dp[0][j] = matrix[0][j];
+        // }
         for (int j = 0; j < n; j++) {
             prev[j] = matrix[0][j];
         }
