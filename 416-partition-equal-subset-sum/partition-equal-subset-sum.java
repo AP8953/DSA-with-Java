@@ -1,18 +1,24 @@
 class Solution {
+    public boolean findSubset(Boolean[] dp, int[] nums, int start, int subsetSum){
+        if(subsetSum < 0) return false;
+        if(subsetSum == 0) return true;
+        if(start == 0) return subsetSum == nums[0];
+
+        if(dp[subsetSum] != null) return dp[subsetSum];
+
+        dp[subsetSum] = (findSubset(dp, nums, start - 1, subsetSum - nums[start]) || findSubset(dp, nums, start - 1, subsetSum));
+        return dp[subsetSum];
+    }
     public boolean canPartition(int[] nums) {
-        int sum = 0;
-        for (int num : nums) sum += num;
-        if (sum % 2 != 0) return false; // If sum is odd, can't partition equally
-
-        int target = sum / 2;
-        boolean[] dp = new boolean[target + 1];
-        dp[0] = true; // Base case: sum 0 is always achievable
-
-        for (int num : nums) {
-            for (int j = target; j >= num; j--) {
-                dp[j] = dp[j] || dp[j - num]; // If we can form `j-num`, we can form `j`
-            }
+        int total = 0;
+        int n = nums.length;
+        for(int i = 0; i < n; ++i){
+            total += nums[i];
         }
-        return dp[target]; // Can we form `target` sum?
+        if(total % 2 == 1) return false;
+
+        int subsetSum = total / 2;
+        Boolean[] dp = new Boolean[subsetSum + 1];
+        return findSubset(dp, nums, n - 1, subsetSum);
     }
 }
