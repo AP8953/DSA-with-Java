@@ -1,24 +1,21 @@
 class Solution {
-    public boolean findSubset(Boolean[] dp, int[] nums, int start, int subsetSum){
-        if(subsetSum < 0) return false;
-        if(subsetSum == 0) return true;
-        if(start == 0) return subsetSum == nums[0];
-
-        if(dp[subsetSum] != null) return dp[subsetSum];
-
-        dp[subsetSum] = (findSubset(dp, nums, start - 1, subsetSum - nums[start]) || findSubset(dp, nums, start - 1, subsetSum));
-        return dp[subsetSum];
-    }
     public boolean canPartition(int[] nums) {
-        int total = 0;
-        int n = nums.length;
-        for(int i = 0; i < n; ++i){
-            total += nums[i];
+        
+        int sum=0;
+        for(int num: nums){
+            sum+=num;
         }
-        if(total % 2 == 1) return false;
-
-        int subsetSum = total / 2;
-        Boolean[] dp = new Boolean[subsetSum + 1];
-        return findSubset(dp, nums, n - 1, subsetSum);
+        if(sum%2!=0) return false; 
+        Boolean[][] dp=new Boolean[nums.length][(sum/2)+1];
+        return func(nums, sum/2, nums.length-1, dp );
+    }
+    private boolean func(int[] nums, int target, int i, Boolean[][] dp){
+        if(target==0) return true;
+        if(i==0) return nums[0]==target;
+        if(dp[i][target]!=null) return dp[i][target];
+        boolean notTaken =func(nums, target, i-1, dp);
+        boolean taken=false;
+        if(nums[i]<=target) taken=func(nums, target-nums[i], i-1, dp);
+        return dp[i][target]=taken || notTaken;
     }
 }
