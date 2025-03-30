@@ -1,24 +1,51 @@
 class Solution {
-    public boolean canPartition(int[] nums) {
-        int sum=Arrays.stream(nums).sum();
-        if(sum%2!=0) return false;
-        int target=sum/2;
-        boolean[] prev=new boolean[target+1];
-        prev[0]=true;
-        if(nums[0]<=target) prev[nums[0]]=true;
-        for(int i=1;i<nums.length;i++){
-            // boolean[] curr=new boolean[target+1];
-            // curr[0]=true;
-            // for(int j=1;j<=target;j++){
-            //     boolean notTaken=prev[j];
-            //     boolean taken=(nums[i]<=j) ? prev[j-nums[i]]:false;
-            //     curr[target]=notTaken|| taken;
-            // }
-            // prev=curr;
-            for(int j=target;j>=nums[i];j--){
-                prev[j]=prev[j] || prev[j-nums[i]];
-            }
+    public boolean canPartition(int[] arr) {
+        int n=arr.length;
+        int totSum = 0;
+        for (int i = 0; i < n; i++) {
+            totSum += arr[i];
         }
-        return prev[target];
+
+        // If the total sum is odd, it cannot be partitioned into equal subsets
+        if (totSum % 2 == 1)
+            return false;
+        else {
+            // Calculate the target sum for each subset
+            int k = totSum / 2;
+            // Create two arrays to store the DP results for the previous and current rows
+            boolean prev[] = new boolean[k + 1];
+
+            // Initialize the first row of the DP table
+            prev[0] = true;
+
+            // Initialize the first column of the DP table
+            if (arr[0] <= k) {
+                prev[arr[0]] = true;
+            }
+
+            // Fill in the DP table using bottom-up dynamic programming
+            for (int ind = 1; ind < n; ind++) {
+                boolean cur[] = new boolean[k + 1];
+                cur[0] = true;
+                for (int target = 1; target <= k; target++) {
+                    // Calculate if the current element is not taken
+                    boolean notTaken = prev[target];
+
+                    // Calculate if the current element is taken
+                    boolean taken = false;
+                    if (arr[ind] <= target) {
+                        taken = prev[target - arr[ind]];
+                    }
+
+                    // Update the DP table for the current element and target sum
+                    cur[target] = notTaken || taken;
+                }
+                // Update the previous row with the current row for the next iteration
+                prev = cur;
+            }
+
+            // The result is stored in the last cell of the DP table
+            return prev[k];
+        }
     }
 }
