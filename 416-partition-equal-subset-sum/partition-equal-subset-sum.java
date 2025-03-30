@@ -1,21 +1,24 @@
 class Solution {
     public boolean canPartition(int[] nums) {
-        
-        int sum=0;
-        for(int num: nums){
-            sum+=num;
+        int sum=Arrays.stream(nums).sum();
+        if(sum%2!=0) return false;
+        int target=sum/2;
+        boolean[] prev=new boolean[target+1];
+        prev[0]=true;
+        if(nums[0]<=target) prev[nums[0]]=true;
+        for(int i=1;i<nums.length;i++){
+            // boolean[] curr=new boolean[target+1];
+            // curr[0]=true;
+            // for(int j=1;j<=target;j++){
+            //     boolean notTaken=prev[j];
+            //     boolean taken=(nums[i]<=j) ? prev[j-nums[i]]:false;
+            //     curr[target]=notTaken|| taken;
+            // }
+            // prev=curr;
+            for(int j=target;j>=nums[i];j--){
+                prev[j]=prev[j] || prev[j-nums[i]];
+            }
         }
-        if(sum%2!=0) return false; 
-        Boolean[][] dp=new Boolean[nums.length][(sum/2)+1];
-        return func(nums, sum/2, nums.length-1, dp );
-    }
-    private boolean func(int[] nums, int target, int i, Boolean[][] dp){
-        if(target==0) return true;
-        if(i==0) return nums[0]==target;
-        if(dp[i][target]!=null) return dp[i][target];
-        boolean notTaken =func(nums, target, i-1, dp);
-        boolean taken=false;
-        if(nums[i]<=target) taken=func(nums, target-nums[i], i-1, dp);
-        return dp[i][target]=taken || notTaken;
+        return prev[target];
     }
 }
