@@ -1,5 +1,5 @@
 class Solution {
-    List<Integer> maxSubset = new ArrayList<>();
+    
 
     public List<Integer> largestDivisibleSubset(int[] nums) {
         Arrays.sort(nums);
@@ -35,17 +35,5 @@ class Solution {
     }
 
 
-    private void backtrack(int[] nums, int index, List<Integer> current) {
-        if (current.size() > maxSubset.size()) {
-            maxSubset = new ArrayList<>(current);
-        }
-
-        for (int i = index; i < nums.length; i++) {
-            if (current.isEmpty() || nums[i] % current.get(current.size() - 1) == 0) {
-                current.add(nums[i]);
-                backtrack(nums, i + 1, current);
-                current.remove(current.size() - 1); // backtrack
-            }
-        }
-    }
+    
 }
