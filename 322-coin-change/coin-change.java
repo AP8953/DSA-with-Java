@@ -1,23 +1,23 @@
 class Solution {
     public int coinChange(int[] coins, int amount) {
         int[][] dp=new int[coins.length][amount+1];
-        for(int[] row:dp) Arrays.fill(row,-1);
-
-        int result= func(coins, amount,coins.length-1,dp);
-        return result==(int)1e9?-1:result;
+        
+        for(int i=0;i<=amount;i++){
+            if(i%coins[0]==0) dp[0][i]=i/coins[0];
+            else dp[0][i]=(int)1e9;
+        }
+        
+        for(int i=1;i<coins.length;i++){
+            for(int target=0;target<=amount;target++){
+                int notTaken=dp[i-1][target];
+                int taken=(coins[i]<=target)?1+dp[i][target-coins[i]]:(int)1e9;
+                dp[i][target]=Math.min(notTaken,taken);
+            }
+        }
+        int result=dp[coins.length-1][amount];
+        return result>=(int)1e9?-1:result;
+        
     }
     
-    private int func(int[] coins, int amount, int i, int[][] dp){
-        if(i==0){
-            if(amount%coins[0]==0) return amount/coins[0];
-            else return (int)1e9;
-        }
-
-        //if(amount==0) return count;
-        //if(i==0) return (coins[i]==amount)?count:-1;
-        if(dp[i][amount]!=-1) return dp[i][amount];
-        int notTaken=func(coins, amount, i-1, dp);
-        int taken=(coins[i]<=amount)?1+func(coins,amount-coins[i],i,dp):(int)1e9;
-        return dp[i][amount]=Math.min(notTaken,taken);
-    } 
+    
 }
