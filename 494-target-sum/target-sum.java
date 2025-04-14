@@ -1,10 +1,12 @@
 class Solution {
     public int findTargetSumWays(int[] nums, int target) {
-        int totalSum=0;
-        for(int num:nums) totalSum+=num;
-        if(totalSum<target || (totalSum-target)%2!=0) return 0;
-        target=(totalSum-target)/2;
-        return perfectSum(nums, target);
+        int totalSum = 0;
+        for (int num : nums) totalSum += num;
+
+        if (totalSum < Math.abs(target) || (totalSum - target) % 2 != 0) return 0;
+
+        int sum = (totalSum - target) / 2;
+        return perfectSum(nums, sum);
     }
     private int perfectSum(int[] arr, int target){
         int n = arr.length;
