@@ -1,26 +1,16 @@
 class Solution {
     public int coinChange(int[] coins, int amount) {
-        int[] prev=new int[amount+1];
-        
-        for(int i=0;i<=amount;i++){
-            if(i%coins[0]==0) prev[i]=i/coins[0];
-            else prev[i]=(int)1e9;
-        }
-        
-        for(int i=1;i<coins.length;i++){
-            int[] curr=new int[amount+1];
-            curr[0]=(int)1e9;
-            for(int target=0;target<=amount;target++){
-                int notTaken=prev[target];
-                int taken=(coins[i]<=target)?1+curr[target-coins[i]]:(int)1e9;
-                curr[target]=Math.min(notTaken,taken);
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, (int)1e9);
+        dp[0] = 0; // base case: 0 coins needed to make amount 0
+
+        for (int coin : coins) {
+            for (int amt = coin; amt <= amount; amt++) {
+                dp[amt] = Math.min(dp[amt], 1 + dp[amt - coin]);
             }
-            prev=curr;
         }
-        int result=prev[amount];
-        return result>=(int)1e9?-1:result;
-        
+
+        return dp[amount] == (int)1e9 ? -1 : dp[amount];
     }
-    
-    
+
 }
