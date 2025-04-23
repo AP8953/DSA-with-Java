@@ -1,15 +1,15 @@
 class Solution {
     public int countLargestGroup(int n) {
-        int[] set=new int[10000];
+        int[] set=new int[37];
         for(int i=1;i<=n;i++){
             set[countDigitsSum(i)]++;
         }
         int max=0;
-        for(int i=0;i<10000;i++){
+        for(int i=0;i<37;i++){
             max=Math.max(max, set[i]);
         }
         int count=0;
-        for(int i=0;i<10000;i++){
+        for(int i=0;i<37;i++){
             if(set[i]==max) count++;
         }
         return count;
