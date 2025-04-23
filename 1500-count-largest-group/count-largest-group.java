@@ -4,13 +4,14 @@ class Solution {
         for(int i=1;i<=n;i++){
             set[countDigitsSum(i)]++;
         }
-        int max=0;
-        for(int i=0;i<37;i++){
-            max=Math.max(max, set[i]);
-        }
-        int count=0;
-        for(int i=0;i<37;i++){
-            if(set[i]==max) count++;
+        int max = 0, count = 0;
+        for (int freq : set) {
+            if (freq > max) {
+                max = freq;
+                count = 1;
+            } else if (freq == max) {
+                count++;
+            }
         }
         return count;
     }
