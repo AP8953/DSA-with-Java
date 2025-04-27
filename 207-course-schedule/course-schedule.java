@@ -9,7 +9,7 @@ class Solution {
         }
         int[] visited=new int[numCourses];
         for(int i=0;i<numCourses;i++){
-            if(visited[i]==0 && hasCycle(i, graph, visited)){
+            if(hasCycle(i, graph, visited)){
                 return false;
             }
         }
