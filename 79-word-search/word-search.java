@@ -1,6 +1,5 @@
 class Solution {
     public boolean exist(char[][] board, String word) {
-        int k=0;
         for(int i=0;i<board.length;i++){
             for(int j=0;j<board[i].length;j++){
                 if (dfs(board, word, i, j, 0)) {
